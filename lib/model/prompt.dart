@@ -4,11 +4,13 @@ class Prompt {
   String id;
   String title;
   String body;
+  int votes;
 
   Prompt({
     this.id = '',
     this.title = '',
     this.body = '',
+    this.votes = 0,
   });
 
   factory Prompt.fromSnapshot(DocumentSnapshot snapshot) {
@@ -17,6 +19,7 @@ class Prompt {
       id: snapshot.id,
       title: data['title'],
       body: data['body'],
+      votes: data['votes'],
     );
   }
 
@@ -24,6 +27,7 @@ class Prompt {
     return {
       'title': title,
       'body': body,
+      'votes': votes,
     };
   }
 }

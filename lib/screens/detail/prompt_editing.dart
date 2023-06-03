@@ -1,6 +1,5 @@
 import 'package:firenotes/model/prompt.dart';
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 
 class PromptEditingScreen extends StatefulWidget {
   final Prompt prompt;
@@ -25,42 +24,54 @@ class _PromptEditingScreen extends State<PromptEditingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFF0C0C14),
       appBar: AppBar(
+        elevation: 0,
+        backgroundColor: const Color(0xFF0C0C14),
         title: const Text(
-          'Edit Prompt',
+          'Edit',
         ),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Prompt prompt = widget.prompt;
+                prompt.body = _bodyController.text;
+                Navigator.pop(context, prompt);
+              },
+              child: const Text(
+                "save",
+                style: TextStyle(color: Colors.white),
+              ))
+        ],
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(20.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              TextField(
-                controller: _titleController,
-                decoration: InputDecoration(
-                  hintText: 'Name',
-                  hintStyle: GoogleFonts.lato(),
-                ),
+              Text(
+                _titleController.text.toString(),
+                style: const TextStyle(
+                    color: Colors.blue,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 16.0),
               TextField(
+                style: const TextStyle(color: Colors.white),
                 controller: _bodyController,
-                decoration: const InputDecoration(
-                  hintText: 'Contact Number',
+                decoration: InputDecoration(
+                  focusedBorder: UnderlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.white.withOpacity(0.2),
+                    ),
+                  ),
                 ),
+                autocorrect: true,
+                cursorColor: Colors.white.withOpacity(0.2),
                 maxLines: null,
                 keyboardType: TextInputType.multiline,
-              ),
-              const SizedBox(height: 16.0),
-              ElevatedButton(
-                child: const Text('Save'),
-                onPressed: () {
-                  Prompt prompt = widget.prompt;
-                  prompt.title = _titleController.text;
-                  prompt.body = _bodyController.text;
-                  Navigator.pop(context, prompt);
-                },
               ),
             ],
           ),

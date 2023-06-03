@@ -18,15 +18,33 @@ class PromptService {
   }
 
   //update
-  Future<void> updatePrompt(Prompt prompt) async {
+  Future<void> updatePromptPost(Prompt prompt) async {
     await _firestore
         .collection('prompts')
         .doc(prompt.id)
         .update(prompt.toJson());
   }
 
+  // Update prompt
+  Future<void> updatePrompt(Prompt prompt) async {
+    await _firestore
+        .collection('prompts')
+        .doc(prompt.id)
+        .update({'votes': prompt.votes});
+  }
+
   //delete
   Future<void> deletePromptById(String id) async {
     await _firestore.collection('prompts').doc(id).delete();
+  }
+
+  //!clear database
+  Future<void> clearDatabase() async {
+    QuerySnapshot snapshot = await _firestore.collection('prompts').get();
+    List<Future<void>> deleteFutures = [];
+    for (var doc in snapshot.docs) {
+      deleteFutures.add(doc.reference.delete());
+    }
+    await Future.wait(deleteFutures);
   }
 }

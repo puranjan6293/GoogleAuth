@@ -6,6 +6,7 @@ import 'package:firenotes/services/prompt_service.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter/services.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'detail/prompt_editing.dart';
 
@@ -17,6 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  String admin = "mallik.puranjan@gmail.com";
   //all database related
   List<Prompt> _prompts = [];
   final PromptService _promptService = PromptService();
@@ -29,6 +31,48 @@ class _HomeScreenState extends State<HomeScreen> {
         _prompts = prompts;
       });
     });
+  }
+
+  //! Clear all database
+  void _clearDatabase() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Clear Database"),
+          content: const Text(
+              "Are you sure you want to clear the database? This action cannot be undone."),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Cancel"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text("Clear"),
+              onPressed: () {
+                _promptService.clearDatabase().then((_) {
+                  setState(() {
+                    _prompts.clear();
+                  });
+                  Navigator.of(context).pop();
+                  Fluttertoast.showToast(
+                    msg: "Database cleared successfully.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    timeInSecForIosWeb: 1,
+                    backgroundColor: Colors.transparent,
+                    textColor: Colors.white,
+                    fontSize: 10.0,
+                  );
+                });
+              },
+            ),
+          ],
+        );
+      },
+    );
   }
 
   //add Prompts
@@ -49,14 +93,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   // edit or update
-  void _editPrompt(Prompt prompt) {
+  void _editPromptPost(Prompt prompt) {
     Navigator.push(
       context,
       MaterialPageRoute(
           builder: (context) => PromptEditingScreen(prompt: prompt)),
     ).then((editedPrompt) {
       if (editedPrompt != null) {
-        _promptService.updatePrompt(editedPrompt).then((_) {
+        _promptService.updatePromptPost(editedPrompt).then((_) {
           setState(() {
             _prompts[_prompts.indexWhere((n) => n.id == prompt.id)] =
                 editedPrompt;
@@ -64,6 +108,15 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+  }
+
+  //! vote function
+  void _votePrompt(Prompt prompt) {
+    setState(() {
+      prompt.votes++;
+    });
+    // Update the votes in the database
+    _promptService.updatePrompt(prompt);
   }
 
   //delete prompt
@@ -85,17 +138,24 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0C0C14),
         elevation: 0,
-        title: const Row(
+        title: Row(
           children: [
-            Text("Prompts"),
-            SizedBox(
+            Text(
+              "Prompts",
+              style: GoogleFonts.pacifico(
+                color: Colors.white.withOpacity(0.9),
+                fontSize: 24,
+              ),
+            ),
+            const SizedBox(
               width: 5,
             ),
-            Align(
+            const Align(
               alignment: Alignment.center,
               child: CircleAvatar(
-                radius: 25,
-                backgroundImage: AssetImage('assets/profile_image.png'),
+                backgroundColor: Color(0xFF0C0C14),
+                radius: 23,
+                backgroundImage: AssetImage('assets/openai.png'),
               ),
             ),
           ],
@@ -114,17 +174,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundColor: Colors.blue,
-                    child: Text(
-                      user!.email!.substring(0, 1).toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 25.0,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ), // Set the desired background color for the avatar
+                  Padding(
+                    padding: const EdgeInsets.only(left: 5),
+                    child: CircleAvatar(
+                      radius: 34,
+                      backgroundColor: Colors.blue,
+                      child: Text(
+                        user!.email!.substring(0, 1).toUpperCase(),
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 25.0,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ), // Set the desired background color for the avatar
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Padding(
@@ -133,9 +196,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       user.email!.length > 6
                           ? '@${user.email!.substring(0, 6)}'
                           : '@${user.email!.substring(0, (user.email!.length) % 2)}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
+                      style: GoogleFonts.poppins(
+                        color: Colors.blue.withOpacity(0.9),
+                        fontSize: 17,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -197,6 +260,40 @@ class _HomeScreenState extends State<HomeScreen> {
                 },
               ),
             ),
+            //!admin
+            Padding(
+              padding: const EdgeInsets.only(left: 10),
+              child: ListTile(
+                leading: const Icon(
+                  Icons.admin_panel_settings,
+                  color: Colors.white,
+                ),
+                title: const Text(
+                  'Admin',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                  ),
+                ),
+                onTap: () {
+                  if (user.email == admin) {
+                    _clearDatabase();
+                  } else {
+                    setState(() {
+                      Fluttertoast.showToast(
+                        msg: "You are not the admin.",
+                        toastLength: Toast.LENGTH_SHORT,
+                        gravity: ToastGravity.BOTTOM,
+                        timeInSecForIosWeb: 1,
+                        backgroundColor: Colors.transparent,
+                        textColor: Colors.white,
+                        fontSize: 10.0,
+                      );
+                    });
+                  }
+                },
+              ),
+            ),
           ],
         ),
       ),
@@ -225,9 +322,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       Expanded(
                         child: Text(
                           prompts[index].title,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
+                          style: GoogleFonts.poppins(
+                            color: Colors.blue.withOpacity(0.9),
+                            fontSize: 17,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -236,14 +333,35 @@ class _HomeScreenState extends State<HomeScreen> {
                         alignment: Alignment.topRight,
                         child: Row(
                           children: [
-                            const Text(
-                              '0',
-                              style: TextStyle(color: Colors.white),
+                            Text(
+                              prompts[index].votes > 100
+                                  ? '100+'
+                                  : prompts[index].votes.toString(),
+                              style: const TextStyle(color: Colors.white),
                             ),
                             IconButton(
-                              onPressed: () {},
+                              //!vote logic
+                              onPressed: () {
+                                if (prompts[index].votes <= 100) {
+                                  _votePrompt(prompts[index]);
+                                }
+                                //!copy function
+                                final String promptText = prompts[index].body;
+                                Clipboard.setData(
+                                    ClipboardData(text: promptText));
+                                Fluttertoast.showToast(
+                                  msg: "Prompt copied to clipboard",
+                                  toastLength: Toast.LENGTH_SHORT,
+                                  gravity: ToastGravity.BOTTOM,
+                                  timeInSecForIosWeb: 1,
+                                  backgroundColor: Colors.transparent,
+                                  // textColor: const Color(0xFF1C1C1E),
+                                  textColor: Colors.white,
+                                  fontSize: 10.0,
+                                );
+                              },
                               icon: const Icon(
-                                Icons.arrow_upward,
+                                Icons.copy,
                                 color: Colors.white,
                                 size: 16,
                               ),
@@ -253,14 +371,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-
                   subtitle: Text(
                     prompts[index].body,
-                    style: TextStyle(color: Colors.white.withOpacity(0.9)),
+                    style: GoogleFonts.poppins(
+                      color: Colors.white.withOpacity(0.9),
+                      fontSize: 15,
+                    ),
                   ),
-                  // onTap: () {
-                  //   _editPrompt(prompts[index]);
-                  // },
                   trailing: PopupMenuButton<String>(
                     color: const Color(0xFF1C1C1E),
                     icon: const Icon(
@@ -278,9 +395,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                         const PopupMenuItem<String>(
-                          value: 'copy',
+                          value: 'edit',
                           child: Text(
-                            'Copy',
+                            'edit',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
@@ -307,19 +424,26 @@ class _HomeScreenState extends State<HomeScreen> {
                             });
                           }
                         }
-                      } else if (option == 'copy') {
-                        final String promptText = prompts[index].body;
-                        Clipboard.setData(ClipboardData(text: promptText));
-                        Fluttertoast.showToast(
-                          msg: "Prompt copied to clipboard",
-                          toastLength: Toast.LENGTH_SHORT,
-                          gravity: ToastGravity.BOTTOM,
-                          timeInSecForIosWeb: 1,
-                          backgroundColor: Colors.transparent,
-                          // textColor: const Color(0xFF1C1C1E),
-                          textColor: Colors.white,
-                          fontSize: 10.0,
-                        );
+                      } else if (option == 'edit') {
+                        if (user.email!.length > 6) {
+                          if ('@${user.email!.substring(0, 6)}' ==
+                              prompts[index].title) {
+                            _editPromptPost(prompts[index]);
+                          } else {
+                            setState(() {
+                              Fluttertoast.showToast(
+                                msg: "You cannot edit another user's post",
+                                toastLength: Toast.LENGTH_SHORT,
+                                gravity: ToastGravity.BOTTOM,
+                                timeInSecForIosWeb: 1,
+                                backgroundColor: Colors.transparent,
+                                // textColor: const Color(0xFF1C1C1E),
+                                textColor: Colors.white,
+                                fontSize: 10.0,
+                              );
+                            });
+                          }
+                        }
                       }
                     },
                   ),
