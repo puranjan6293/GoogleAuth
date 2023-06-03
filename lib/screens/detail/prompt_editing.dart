@@ -24,10 +24,10 @@ class _PromptEditingScreen extends State<PromptEditingScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0C0C14),
+      backgroundColor: const Color(0xFF0D0D2B),
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: const Color(0xFF0C0C14),
+        backgroundColor: const Color(0xFF0D0D2B),
         title: const Text(
           'Edit',
         ),

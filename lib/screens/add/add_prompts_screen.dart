@@ -18,7 +18,7 @@ class _AddPromptsScreenState extends State<AddPromptsScreen> {
   Widget build(BuildContext context) {
     final User? user = _auth.currentUser;
     return Scaffold(
-      backgroundColor: const Color(0xFF0C0C14),
+      backgroundColor: const Color(0xFF0D0D2B),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(

@@ -134,41 +134,26 @@ class _HomeScreenState extends State<HomeScreen> {
     final User? user = _auth.currentUser;
     return Scaffold(
       // backgroundColor: const Color(0xFF1C1C1E),
-      backgroundColor: const Color(0xFF0C0C14),
+      backgroundColor: const Color(0xFF0D0D2B),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF0C0C14),
+        backgroundColor: const Color(0xFF0D0D2B),
         elevation: 0,
-        title: Row(
-          children: [
-            Text(
-              "Prompts",
-              style: GoogleFonts.pacifico(
-                color: Colors.white.withOpacity(0.9),
-                fontSize: 24,
-              ),
-            ),
-            const SizedBox(
-              width: 5,
-            ),
-            const Align(
-              alignment: Alignment.center,
-              child: CircleAvatar(
-                backgroundColor: Color(0xFF0C0C14),
-                radius: 23,
-                backgroundImage: AssetImage('assets/openai.png'),
-              ),
-            ),
-          ],
+        title: Text(
+          "Prompts",
+          style: GoogleFonts.pacifico(
+            color: Colors.white.withOpacity(0.9),
+            fontSize: 24,
+          ),
         ),
       ),
       drawer: Drawer(
-        backgroundColor: const Color.fromARGB(255, 18, 18, 52),
+        backgroundColor: const Color(0xFF0D0D2B),
         child: ListView(
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
               decoration: const BoxDecoration(
-                color: Color.fromARGB(255, 18, 18, 52),
+                color: Color(0xFF0D0D2B),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -337,7 +322,10 @@ class _HomeScreenState extends State<HomeScreen> {
                               prompts[index].votes > 100
                                   ? '100+'
                                   : prompts[index].votes.toString(),
-                              style: const TextStyle(color: Colors.white),
+                              style: GoogleFonts.poppins(
+                                color: Colors.white,
+                                fontSize: 13,
+                              ),
                             ),
                             IconButton(
                               //!vote logic
@@ -363,7 +351,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               icon: const Icon(
                                 Icons.copy,
                                 color: Colors.white,
-                                size: 16,
+                                size: 14,
                               ),
                             ),
                           ],
@@ -382,6 +370,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     color: const Color(0xFF1C1C1E),
                     icon: const Icon(
                       Icons.more_vert,
+                      // Icons.help,
                       color: Colors.white,
                       size: 18,
                     ),
