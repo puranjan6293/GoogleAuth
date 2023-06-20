@@ -1,4 +1,4 @@
-# firenotes
+# GoogleAuth
 
 A new Flutter project.
 
